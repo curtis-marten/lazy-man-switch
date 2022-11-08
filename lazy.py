@@ -4,9 +4,32 @@ import signal
 import sys
 import RPi.GPIO as GPIO
 import logging
+import tweepy
+import configparser
 
 BUTTON_GPIO = 5
 logging.basicConfig(filename='lazy.log', format='%(asctime)s %(message)s', level=logging.INFO)
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+api_key = config['twitter']['api_key']
+api_secret = config['twitter']['api_secret']
+access_token = config['twitter']['access_token']
+access_secret = config['twitter']['access_secret']
+
+#authentication
+auth = tweepy.OAuthHandler(api_key, api_secret)
+auth.set_access_token(access_token, access_secret)
+
+api = tweepy.API(auth)
+public_tweets = api.home_timeline()
+
+for tweet in public_tweets:
+    print(tweet.text)
+
+#status = api.PostUpdate('Hello World!')
+#print(status)
 
 def signal_handler(sig, frame):
     GPIO.cleanup()
