@@ -4,6 +4,7 @@ import signal
 import sys
 import RPi.GPIO as GPIO
 import logging
+import time
 import tweepy
 import configparser
 
@@ -23,10 +24,6 @@ auth = tweepy.OAuthHandler(api_key, api_secret)
 auth.set_access_token(access_token, access_secret)
 
 api = tweepy.API(auth)
-public_tweets = api.home_timeline()
-
-for tweet in public_tweets:
-    print(tweet.text)
 
 #status = api.PostUpdate('Hello World!')
 #print(status)
@@ -37,8 +34,10 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 def button_pressed_callback(channel):
-    print("Button Pressed!")
+    tweet = "Hello Twitter! " + time.strftime("%a, %d %b %Y %I:%M:%S ", time.localtime())
     logging.info('Button Pressed')
+    print("Sending Tweet: ", tweet)
+    api.update_status(status=tweet)
     #also log time to file and save
 
 if __name__ == '__main__':
